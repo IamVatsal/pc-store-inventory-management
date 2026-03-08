@@ -25,8 +25,10 @@ import { brands, categories } from "@/lib/constants"
 import { Product } from "@/lib/types"
 import { updateProduct } from "@/app/actions"
 
-export default function UpdateProd(prop : { product: Product }) {
 
+
+export default function UpdateProd(prop : { product: Product }) {
+    const [isOpen, setIsOpen] = useState(false);
     const [brand, setBrand] = useState<string>(prop.product.brand);
     const [customBrand, setCustomBrand] = useState<string>(prop.product.brand);
     const [productCategory, setProductCategory] = useState<string>(prop.product.category);
@@ -36,6 +38,17 @@ export default function UpdateProd(prop : { product: Product }) {
     const [productPrice, setProductPrice] = useState<string>(prop.product.price.toString());
     const [productQuantity, setProductQuantity] = useState<string>(prop.product.quantity.toString());
 
+    useEffect(() => {
+        setBrand(prop.product.brand);
+        setCustomBrand(prop.product.brand);
+        setProductCategory(prop.product.category);
+        setCustomCategory(prop.product.category);
+        setProductName(prop.product.name);
+        setProductDescription(prop.product.description);
+        setProductPrice(prop.product.price.toString());
+        setProductQuantity(prop.product.quantity.toString());
+    }, [prop.product]);
+    
     async function updateProductHandler() {
             const data : Product = {
                 id: prop.product.id,
@@ -47,6 +60,7 @@ export default function UpdateProd(prop : { product: Product }) {
                 description: productDescription,
             }
             try {
+                setIsOpen(false);
                 await updateProduct(data);
             }catch (error) {
                 console.error("Error updating product:", error);
@@ -55,7 +69,7 @@ export default function UpdateProd(prop : { product: Product }) {
 
 
     return (
-        <Dialog>
+        <Dialog open={isOpen} onOpenChange={setIsOpen}>
             <form>
                 <DialogTrigger asChild>
                     <Button variant="outline">Edit</Button>

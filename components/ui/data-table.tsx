@@ -51,6 +51,11 @@ export function DataTable<TData, TValue>({
   const table = useReactTable({
     data,
     columns,
+    // Prefer entity id when present so row/component identity stays stable after deletes.
+    getRowId: (originalRow, index) => {
+      const rowWithId = originalRow as { id?: string | number }
+      return rowWithId.id !== undefined ? String(rowWithId.id) : String(index)
+    },
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     onSortingChange: setSorting,

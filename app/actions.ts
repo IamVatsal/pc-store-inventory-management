@@ -17,7 +17,6 @@ export async function createProduct(prop: Product) {
                 description: prop.description,
             },
         });
-        revalidatePath("/");
     } catch (error) {
         if (
             typeof error === "object" &&
@@ -31,6 +30,8 @@ export async function createProduct(prop: Product) {
         }
 
         throw error;
+    }finally {
+        revalidatePath("/");
     }
 }
 
@@ -48,7 +49,7 @@ export async function updateProduct(product: Product) {
                 description: product.description,
             },
         });
-        revalidatePath("/");
+        
     }catch (error){
         if (
             typeof error === "object" &&
@@ -61,5 +62,29 @@ export async function updateProduct(product: Product) {
             );
         }
         throw error;
+    }finally{
+        revalidatePath("/");
+    }
+}
+
+export async function deleteProduct(id: string) {
+    try {
+        await prisma.product.delete({
+            where: { id },
+        });
+    }catch (error){
+        if (
+            typeof error === "object" &&
+            error !== null &&
+            "code" in error &&
+            error.code === "P2031"
+        ) {
+            throw new Error(
+                "MongoDB must run as a replica set for Prisma. Start Docker Desktop, run `docker compose up -d`, and retry."
+            );
+        }
+        throw error;
+    }finally {
+        revalidatePath("/");
     }
 }
